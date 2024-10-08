@@ -180,6 +180,7 @@ First, generate a *random sample* of size $n=1000$ air pollution records by (i) 
 :::
 
 ```{r}
+set.seed(4321)
 # i. pool observations across the government and crowd-sourced data
 cs_govt <- bind_rows(crowdsourced, govt)
 
@@ -191,11 +192,35 @@ Second, create a *stratified random sample*. Do so by (i) stratifying your poole
 
 ```{r}
 # i. stratify pooled data-set into strata of 0.01 degrees of latitude
-cs_govt_strat <- cut(cs_govt$latitude # ????? halp
+cs_govt_strat <- cs_govt |>
+  mutate(lat_rounded = round(latitude, digits = 2))
 
+# ii. randomly sample 200 air pollution observations from each stratum
+rand_strat_sample <- cs_govt_strat |>
+  group_by(lat_rounded) |>
+  slice_sample(n = 200)
+
+# check that this worked
+table(rand_strat_sample$lat_rounded)
 ```
 
 
 #### Question 6.2
 
 Compare estimated means of PM 2.5 for each sampling strategy to the NASA estimate of 89.2 $\mu g/m^3$. Which sample seems to match the satellite data best? What would you recommend the Prime Minister do? Does your proposed sampling strategy rely more on government or on crowd-sourced data? Why might that be the case?
+
+```{r}
+# mean of random sample
+mean(cs_govt_sample$PM)
+
+# mean of stratified random sample
+mean(rand_strat_sample$PM)
+```
+
+- Though the means of the two sampling strategies are pretty similar, the mean from the stratified random sample seems to match the satellite data better than the random sample! I would recommend that the Prime Minister use the stratified random sample strategy to most accurately represent the mean PM 2.5 across Lahore. This proposed sampling strategy relies more on crowd-sourced data. NOT DONE HERE YET!!!!
+
+
+
+
+
+
