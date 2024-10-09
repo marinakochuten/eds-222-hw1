@@ -180,7 +180,9 @@ First, generate a *random sample* of size $n=1000$ air pollution records by (i) 
 :::
 
 ```{r}
+# set.seed() for reproducability 
 set.seed(4321)
+
 # i. pool observations across the government and crowd-sourced data
 cs_govt <- bind_rows(crowdsourced, govt)
 
@@ -217,7 +219,19 @@ mean(cs_govt_sample$PM)
 mean(rand_strat_sample$PM)
 ```
 
-- Though the means of the two sampling strategies are pretty similar, the mean from the stratified random sample seems to match the satellite data better than the random sample! I would recommend that the Prime Minister use the stratified random sample strategy to most accurately represent the mean PM 2.5 across Lahore. This proposed sampling strategy relies more on crowd-sourced data. NOT DONE HERE YET!!!!
+Though the means of the two sampling strategies similar, the mean from the stratified random sample matches the satellite data better than the random sample. I would recommend that the Prime Minister use the stratified random sample strategy to most accurately represent the mean PM 2.5 across Lahore. This proposed sampling strategy relies more on crowd-sourced data. The government data has a lot of observations that are all really close together geographically. In the pooled dataset, observations from the government monitors account for 26% of the total pollution observations.
+```{r}
+# percentage of pooled data that comes from government monitors
+(nrow(govt) / nrow(cs_govt)) * 100
+```
+When we stratified the pooled dataset, all of the observations from government monitors were grouped into the same strata. 
+```{r}
+# proof that when we stratified our dataset we grouped all of the government observations into one strata
+govt_strat <- govt |>
+  mutate(lat_rounded = round(latitude, digits = 2))
+n_distinct(govt_strat$lat_rounded) 
+```
+By then taking an equal number of random samples from each strata, we limit the number of observations that could have come from government monitors to no more than 20% (as the government monitors were bound to 1 out of 5 strata), and our analysis better represents the geographic spread of the crowd sourced data.
 
 
 
