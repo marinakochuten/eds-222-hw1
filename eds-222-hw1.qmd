@@ -1,6 +1,6 @@
 ---
 title: "EDS 222: Homework 1"
-date: "Assigned 9/30, due 10/14"
+date: last-modified
 author: "Marina Kochuten"
 execute: 
   warning: false
