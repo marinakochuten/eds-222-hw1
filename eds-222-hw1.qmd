@@ -97,16 +97,16 @@ The goal of pollution monitoring in Lahore is to measure the average pollution c
 
 1.  What is the *population* in this setting? Please be precise.
 
--   In this setting, the population is the pollution condition across all of Lahore over the given time period.
+-   In this setting, the population is the pollution condition across all of Lahore over the given time period, November 2018 to November 2019.
 
 2.  What are the *samples* in this setting? Please be precise.
-    -   The samples are the areas where monitors are installed and collecting data. The data are collected with different methodologies, so they are separate samples. So, we have a sample of crowdsourced data and one for the government data. Both samples represent daily observations taken from Nov 4th 2018 to Nov 30th 2019.
+    -   The samples are the two datasets, one sample is the crowdsourced data and the other sample is the government data. Since the data are collected with different methodologies, they are separate samples. Both samples represent daily observations taken from November 2018 to November 2019.
 
 <!-- -->
 
 3.  These samples were not randomly collected from across locations in Lahore. Given the sampling approaches described above, discuss possible biases that may enter when we use these samples to construct estimates of population parameters.
 
--   The crowd-sourced data comes from monitors that were voluntarily placed in individuals households. Self-selection bias could come into play here, as people who would choose to monitor and upload pollution data are going to represent a particular slice of the population, and may not be representative of pollution as a whole. People who may be uploading data are probably more educated and affluent.
+-   The crowd-sourced data comes from monitors that were voluntarily placed in individuals households. Self-selection bias could come into play here, as people who would choose to monitor and upload pollution data are going to represent a particular slice of the population, and may not be representative of pollution as a whole. People who may be uploading data are probably more educated and affluent. It is also possible that people uploading data are concerned about their air quality near their home, because they live in an area with poorer air quality.
 -   The government data comes from monitors that are placed in areas with cleaner air. This will also introduce bias, as a sample from monitors in areas with cleaner air will not represent the population as a whole, and will make it seem like pollution in Lahore is not as bad as it actually is.
 
 ### Question 3
@@ -148,7 +148,7 @@ max(crowdsourced$PM)
 
 3.  Are the differences in mean pollution as expected, given what we know about the sampling strategies?
 
--   Yes, it makes sense that the mean PM 2.5 concentration would be much lower in the government data, as they only placed monitors in places known to have clean air.
+-   Yes, it makes sense that the mean PM 2.5 concentration would be much lower in the government data, as they only placed monitors in places known to have clean air. On the other hand, bias from the crowdsourced data would result in a higher mean PM 2.5 concentration, as the observations are coming from homes where people are most likely concerned about poor air quality nearby.
 
 ### Question 4
 
@@ -198,6 +198,9 @@ cs_govt <- bind_rows(crowdsourced, govt)
 
 # ii. draw observations at random from this pooled sample
 cs_govt_sample <- slice_sample(cs_govt, n = 1000)
+
+# check dataset dimensions for random sample, rows should = 1000
+dim(cs_govt_sample)
 ```
 
 Second, create a *stratified random sample*. Do so by (i) stratifying your pooled data-set into strata of 0.01 degrees of latitude, and (ii) randomly sampling 200 air pollution observations from each stratum.
@@ -214,6 +217,9 @@ rand_strat_sample <- cs_govt_strat |>
 
 # check that this worked
 table(rand_strat_sample$lat_rounded)
+
+# check dataset dimensions for stratified random sample, rows should = 1000
+dim(cs_govt_sample)
 ```
 
 #### Question 6.2

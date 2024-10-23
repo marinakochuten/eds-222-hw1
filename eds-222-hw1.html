@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Marina Kochuten">
-<meta name="dcterms.date" content="2024-10-15">
+<meta name="dcterms.date" content="2024-10-22">
 
 <title>EDS 222: Homework 1</title>
 <style>
@@ -127,7 +127,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">October 15, 2024</p>
+      <p class="date">October 22, 2024</p>
     </div>
   </div>
   
@@ -269,12 +269,12 @@ Tip
 <li>What is the <em>population</em> in this setting? Please be precise.</li>
 </ol>
 <ul>
-<li>In this setting, the population is the pollution condition across all of Lahore over the given time period.</li>
+<li>In this setting, the population is the pollution condition across all of Lahore over the given time period, November 2018 to November 2019.</li>
 </ul>
 <ol start="2" type="1">
 <li>What are the <em>samples</em> in this setting? Please be precise.
 <ul>
-<li>The samples are the areas where monitors are installed and collecting data. The data are collected with different methodologies, so they are separate samples. So, we have a sample of crowdsourced data and one for the government data. Both samples represent daily observations taken from Nov 4th 2018 to Nov 30th 2019.</li>
+<li>The samples are the two datasets, one sample is the crowdsourced data and the other sample is the government data. Since the data are collected with different methodologies, they are separate samples. Both samples represent daily observations taken from November 2018 to November 2019.</li>
 </ul></li>
 </ol>
 <!-- -->
@@ -282,7 +282,7 @@ Tip
 <li>These samples were not randomly collected from across locations in Lahore. Given the sampling approaches described above, discuss possible biases that may enter when we use these samples to construct estimates of population parameters.</li>
 </ol>
 <ul>
-<li>The crowd-sourced data comes from monitors that were voluntarily placed in individuals households. Self-selection bias could come into play here, as people who would choose to monitor and upload pollution data are going to represent a particular slice of the population, and may not be representative of pollution as a whole. People who may be uploading data are probably more educated and affluent.</li>
+<li>The crowd-sourced data comes from monitors that were voluntarily placed in individuals households. Self-selection bias could come into play here, as people who would choose to monitor and upload pollution data are going to represent a particular slice of the population, and may not be representative of pollution as a whole. People who may be uploading data are probably more educated and affluent. It is also possible that people uploading data are concerned about their air quality near their home, because they live in an area with poorer air quality.</li>
 <li>The government data comes from monitors that are placed in areas with cleaner air. This will also introduce bias, as a sample from monitors in areas with cleaner air will not represent the population as a whole, and will make it seem like pollution in Lahore is not as bad as it actually is.</li>
 </ul>
 </section>
@@ -347,7 +347,7 @@ Tip
 <li>Are the differences in mean pollution as expected, given what we know about the sampling strategies?</li>
 </ol>
 <ul>
-<li>Yes, it makes sense that the mean PM 2.5 concentration would be much lower in the government data, as they only placed monitors in places known to have clean air.</li>
+<li>Yes, it makes sense that the mean PM 2.5 concentration would be much lower in the government data, as they only placed monitors in places known to have clean air. On the other hand, bias from the crowdsourced data would result in a higher mean PM 2.5 concentration, as the observations are coming from homes where people are most likely concerned about poor air quality nearby.</li>
 </ul>
 </section>
 <section id="question-4" class="level3">
@@ -419,25 +419,36 @@ Tip
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>cs_govt <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(crowdsourced, govt)</span>
 <span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ii. draw observations at random from this pooled sample</span></span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>cs_govt_sample <span class="ot">&lt;-</span> <span class="fu">slice_sample</span>(cs_govt, <span class="at">n =</span> <span class="dv">1000</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>cs_govt_sample <span class="ot">&lt;-</span> <span class="fu">slice_sample</span>(cs_govt, <span class="at">n =</span> <span class="dv">1000</span>)</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="co"># check dataset dimensions for random sample, rows should = 1000</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(cs_govt_sample)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1000    4</code></pre>
+</div>
 </div>
 <p>Second, create a <em>stratified random sample</em>. Do so by (i) stratifying your pooled data-set into strata of 0.01 degrees of latitude, and (ii) randomly sampling 200 air pollution observations from each stratum.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># i. stratify pooled data-set into strata of 0.01 degrees of latitude</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>cs_govt_strat <span class="ot">&lt;-</span> cs_govt <span class="sc">|&gt;</span></span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lat_rounded =</span> <span class="fu">round</span>(latitude, <span class="at">digits =</span> <span class="dv">2</span>))</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ii. randomly sample 200 air pollution observations from each stratum</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>rand_strat_sample <span class="ot">&lt;-</span> cs_govt_strat <span class="sc">|&gt;</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(lat_rounded) <span class="sc">|&gt;</span></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">200</span>)</span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="co"># check that this worked</span></span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(rand_strat_sample<span class="sc">$</span>lat_rounded)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># i. stratify pooled data-set into strata of 0.01 degrees of latitude</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>cs_govt_strat <span class="ot">&lt;-</span> cs_govt <span class="sc">|&gt;</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lat_rounded =</span> <span class="fu">round</span>(latitude, <span class="at">digits =</span> <span class="dv">2</span>))</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ii. randomly sample 200 air pollution observations from each stratum</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>rand_strat_sample <span class="ot">&lt;-</span> cs_govt_strat <span class="sc">|&gt;</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(lat_rounded) <span class="sc">|&gt;</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_sample</span>(<span class="at">n =</span> <span class="dv">200</span>)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co"># check that this worked</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(rand_strat_sample<span class="sc">$</span>lat_rounded)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 31.56 31.57 31.58 31.59  31.6 
   200   200   200   200   200 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check dataset dimensions for stratified random sample, rows should = 1000</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(cs_govt_sample)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1000    4</code></pre>
 </div>
 </div>
 </section>
@@ -445,31 +456,31 @@ Tip
 <h4 class="anchored" data-anchor-id="question-6.2">Question 6.2</h4>
 <p>Compare estimated means of PM 2.5 for each sampling strategy to the NASA estimate of 89.2 <span class="math inline">\(\mu g/m^3\)</span>. Which sample seems to match the satellite data best? What would you recommend the Prime Minister do? Does your proposed sampling strategy rely more on government or on crowd-sourced data? Why might that be the case?</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mean of random sample</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(cs_govt_sample<span class="sc">$</span>PM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mean of random sample</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(cs_govt_sample<span class="sc">$</span>PM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 62.59</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mean of stratified random sample</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(rand_strat_sample<span class="sc">$</span>PM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mean of stratified random sample</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(rand_strat_sample<span class="sc">$</span>PM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 66.853</code></pre>
 </div>
 </div>
 <p>Though the means of the two sampling strategies similar, the mean from the stratified random sample matches the satellite data better than the random sample. I would recommend that the Prime Minister use the stratified random sample strategy to most accurately represent the mean PM 2.5 across Lahore. This proposed sampling strategy relies more on crowd-sourced data. The government data has a lot of observations that are all really close together geographically. In the pooled dataset, observations from the government monitors account for 26% of the total pollution observations.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># percentage of pooled data that comes from government monitors</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>(<span class="fu">nrow</span>(govt) <span class="sc">/</span> <span class="fu">nrow</span>(cs_govt)) <span class="sc">*</span> <span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># percentage of pooled data that comes from government monitors</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>(<span class="fu">nrow</span>(govt) <span class="sc">/</span> <span class="fu">nrow</span>(cs_govt)) <span class="sc">*</span> <span class="dv">100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 26.31579</code></pre>
 </div>
 </div>
 <p>When we stratified the pooled dataset, all of the observations from government monitors were grouped into the same strata.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># proof that when we stratified our dataset we grouped all of the government observations into one strata</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>govt_strat <span class="ot">&lt;-</span> govt <span class="sc">|&gt;</span></span>
-<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lat_rounded =</span> <span class="fu">round</span>(latitude, <span class="at">digits =</span> <span class="dv">2</span>))</span>
-<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(govt_strat<span class="sc">$</span>lat_rounded) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># proof that when we stratified our dataset we grouped all of the government observations into one strata</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>govt_strat <span class="ot">&lt;-</span> govt <span class="sc">|&gt;</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lat_rounded =</span> <span class="fu">round</span>(latitude, <span class="at">digits =</span> <span class="dv">2</span>))</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="fu">n_distinct</span>(govt_strat<span class="sc">$</span>lat_rounded) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1</code></pre>
 </div>
